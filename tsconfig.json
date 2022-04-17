@@ -7,9 +7,10 @@
     "types": [
       "node",
       "jest"
-    ]
+    ],
+    "sourceMap": true
   },
   "include": [
     "src/*"
-  ],
+  ]
 }

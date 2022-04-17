@@ -1,5 +1,5 @@
-import { Example } from './Example'
+import './app.scss'
 
-const example = new Example()
+import { BasicWorldDemo } from './game/BasicWorldDemo'
 
-console.log('Hello World!', example.toString())
+new BasicWorldDemo()
