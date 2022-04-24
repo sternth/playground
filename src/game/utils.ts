@@ -16,3 +16,7 @@ export enum ActionName {
   TURN_RIGHT = 'turn-right',
   JUMP = 'jump',
 }
+
+export function isToggleAction (actionName: string): boolean {
+  return /^toggle/.test(actionName)
+}

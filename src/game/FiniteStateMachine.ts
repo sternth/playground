@@ -1,4 +1,4 @@
-import { BasicCharacterControllerInput } from './BasicCharacterControllerInput'
+import { BasicControllerInput } from './BasicControllerInput'
 
 interface StateConstructor {
   new (parent: FiniteStateMachine): State<FiniteStateMachine>;
@@ -17,7 +17,7 @@ export abstract class State<T extends FiniteStateMachine> {
 
   abstract exit (): void
 
-  abstract update (timeElapsed: number, input: BasicCharacterControllerInput): void
+  abstract update (timeElapsed: number, input: BasicControllerInput): void
 }
 
 
@@ -51,7 +51,7 @@ export class FiniteStateMachine {
     state.enter(prevState)
   }
 
-  public update (timeElapsed: number, input: BasicCharacterControllerInput) {
+  public update (timeElapsed: number, input: BasicControllerInput) {
     if (this.currentState) {
       this.currentState.update(timeElapsed, input)
     }

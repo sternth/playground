@@ -1,7 +1,8 @@
 import * as THREE from 'three'
 import { AxesHelper } from './debug/AxesHelper'
-import { BasicCharacterController } from './BasicCharacterController'
 import { ThirdPersonCamera } from './ThirdPersonCamera'
+import { BasicCharacter } from './BasicCharacter'
+import { BasicController } from './BasicController'
 
 export class BasicWorldDemo {
   private readonly clock: THREE.Clock
@@ -12,7 +13,7 @@ export class BasicWorldDemo {
 
   private mixers: THREE.AnimationMixer[]
 
-  private controls: BasicCharacterController
+  private controls: BasicController
   private thirdPersonCamera: ThirdPersonCamera
 
   public constructor () {
@@ -73,7 +74,7 @@ export class BasicWorldDemo {
     ])
 
     const plane = new THREE.Mesh(
-      new THREE.PlaneGeometry(100, 100, 1, 1),
+      new THREE.PlaneGeometry(200, 200, 1, 1),
       new THREE.MeshStandardMaterial({ color: 0xFFFFFF }),
     )
     plane.castShadow = false
@@ -91,14 +92,14 @@ export class BasicWorldDemo {
     box.add(new THREE.AxesHelper(10))
     this.scene.add(box)
 
-    this.controls = new BasicCharacterController({
+    const basicChar = new BasicCharacter({
+      name: 'Tom',
       scene: this.scene,
-      onReady: (target => {
-        this.thirdPersonCamera = new ThirdPersonCamera({
-          camera: this.camera,
-          target,
-        })
-      }),
+    })
+    this.controls = new BasicController({
+      domElement: this.renderer.domElement,
+      target: basicChar,
+      camera: this.camera,
     })
 
     this.render()

@@ -2,8 +2,8 @@ import * as THREE from 'three'
 
 import { FiniteStateMachine, State } from './FiniteStateMachine'
 import { BasicCharacterControllerProxy } from './BasicCharacterControllerProxy'
-import { BasicCharacterControllerInput } from './BasicCharacterControllerInput'
 import { ActionName } from './utils'
+import { BasicControllerInput } from './BasicControllerInput'
 
 export class CharacterFSM extends FiniteStateMachine {
   public readonly proxy: BasicCharacterControllerProxy
@@ -52,16 +52,16 @@ class IdleState extends State<CharacterFSM> {
   exit (): void {
   }
 
-  update (_: number, input: BasicCharacterControllerInput): void {
-    if (input.keys.forward) {
+  update (_: number, input: BasicControllerInput): void {
+    if (input.actions.forward) {
       this.parent.setState(ActionName.WALK)
-    } else if (input.keys.backward) {
+    } else if (input.actions.backward) {
       this.parent.setState(ActionName.WALK_BACKWARD)
-    } else if (input.keys.space) {
+    } else if (input.actions.jump) {
       this.parent.setState(ActionName.JUMP)
-    } else if (input.keys.left) {
+    } else if (input.actions.left) {
       this.parent.setState(ActionName.TURN_LEFT)
-    } else if (input.keys.right) {
+    } else if (input.actions.right) {
       this.parent.setState(ActionName.TURN_RIGHT)
     }
   }
@@ -102,14 +102,14 @@ class WalkState extends State<CharacterFSM> {
   exit (): void {
   }
 
-  update (_: number, input: BasicCharacterControllerInput): void {
-    if (input.keys.space) {
+  update (_: number, input: BasicControllerInput): void {
+    if (input.actions.jump) {
       this.parent.setState(ActionName.JUMP)
       return
     }
 
-    if (input.keys.forward) {
-      if (input.keys.slash) {
+    if (input.actions.forward) {
+      if (input.actions.toggleMovement) {
         this.parent.setState(ActionName.RUN)
       }
       return
@@ -154,14 +154,14 @@ class WalkBackwardState extends State<CharacterFSM> {
   exit (): void {
   }
 
-  update (_: number, input: BasicCharacterControllerInput): void {
-    if (input.keys.space) {
+  update (_: number, input: BasicControllerInput): void {
+    if (input.actions.jump) {
       this.parent.setState(ActionName.JUMP)
       return
     }
 
-    if (input.keys.backward) {
-      if (input.keys.slash) {
+    if (input.actions.backward) {
+      if (input.actions.toggleMovement) {
         this.parent.setState(ActionName.RUN_BACKWARD)
       }
       return
@@ -207,14 +207,14 @@ class RunState extends State<CharacterFSM> {
   exit (): void {
   }
 
-  update (_: number, input: BasicCharacterControllerInput): void {
-    if (input.keys.space) {
+  update (_: number, input: BasicControllerInput): void {
+    if (input.actions.jump) {
       this.parent.setState(ActionName.JUMP)
       return
     }
 
-    if (input.keys.forward || input.keys.backward) {
-      if (!input.keys.slash) {
+    if (input.actions.forward || input.actions.backward) {
+      if (!input.actions.toggleMovement) {
         this.parent.setState(ActionName.WALK)
       }
       return
@@ -259,14 +259,14 @@ class RunBackwardState extends State<CharacterFSM> {
   exit (): void {
   }
 
-  update (_: number, input: BasicCharacterControllerInput): void {
-    if (input.keys.space) {
+  update (_: number, input: BasicControllerInput): void {
+    if (input.actions.jump) {
       this.parent.setState(ActionName.JUMP)
       return
     }
 
-    if (input.keys.backward) {
-      if (!input.keys.slash) {
+    if (input.actions.backward) {
+      if (!input.actions.toggleMovement) {
         this.parent.setState(ActionName.WALK_BACKWARD)
       }
       return
@@ -304,16 +304,16 @@ class TurnLeftState extends State<CharacterFSM> {
   exit (): void {
   }
 
-  update (timeElapsed: number, input: BasicCharacterControllerInput): void {
-    if (input.keys.space) {
+  update (timeElapsed: number, input: BasicControllerInput): void {
+    if (input.actions.jump) {
       this.parent.setState(ActionName.JUMP)
       return
     }
 
-    if (input.keys.left) {
-      if (input.keys.forward) {
+    if (input.actions.left) {
+      if (input.actions.forward) {
         this.parent.setState(ActionName.WALK)
-      } else if (input.keys.backward) {
+      } else if (input.actions.backward) {
         this.parent.setState(ActionName.WALK_BACKWARD)
       }
     } else {
@@ -350,16 +350,16 @@ class TurnRightState extends State<CharacterFSM> {
   exit (): void {
   }
 
-  update (timeElapsed: number, input: BasicCharacterControllerInput): void {
-    if (input.keys.space) {
+  update (timeElapsed: number, input: BasicControllerInput): void {
+    if (input.actions.jump) {
       this.parent.setState(ActionName.JUMP)
       return
     }
 
-    if (input.keys.right) {
-      if (input.keys.forward) {
+    if (input.actions.right) {
+      if (input.actions.forward) {
         this.parent.setState(ActionName.WALK)
-      } else if (input.keys.backward) {
+      } else if (input.actions.backward) {
         this.parent.setState(ActionName.WALK_BACKWARD)
       }
     } else {
