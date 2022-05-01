@@ -1,4 +1,4 @@
-import { BasicControllerInput } from './BasicControllerInput'
+import { BasicControllerInput } from '../BasicControllerInput'
 
 interface StateConstructor {
   new (parent: FiniteStateMachine): State<FiniteStateMachine>;

@@ -1,5 +1,5 @@
 import { ActionName, Animation } from './utils'
-import { CharacterFSM } from './CharacterFSM'
+import { CharacterFSM } from './state/CharacterFSM'
 import * as THREE from 'three'
 import { BasicCharacterControllerProxy } from './BasicCharacterControllerProxy'
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader'

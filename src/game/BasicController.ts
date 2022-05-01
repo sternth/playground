@@ -77,9 +77,9 @@ export class BasicController {
 
     if (this.input.mouseButtonPressed[THREE.MOUSE.RIGHT]) {
       a.set(0, 1, 0)
-      // const q = new THREE.Quaternion()
       q.setFromAxisAngle(a, this.spherical.theta + PI)
-      r.copy(q)
+      const t = 1.0 - Math.pow(0.001, timeElapsed)
+      r.slerp(q, t)
 
       if (this.input.actions.left) {
         velocity.x += acceleration.x * timeElapsed
