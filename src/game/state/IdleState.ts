@@ -1,3 +1,5 @@
+import * as THREE from 'three'
+
 import { State } from './FiniteStateMachine'
 import { ActionName } from '../utils'
 import { BasicControllerInput } from '../BasicControllerInput'
@@ -32,16 +34,19 @@ export class IdleState extends State<CharacterFSM> {
   }
 
   update (_: number, input: BasicControllerInput): void {
-    if (input.actions.forward) {
+    const { forward, backward, jump, left, right } = input.actions
+    const rightButton = input.mouseButtonPressed[THREE.MOUSE.RIGHT]
+
+    if (forward) {
       this.parent.setState(ActionName.WALK)
-    } else if (input.actions.backward) {
+    } else if (backward) {
       this.parent.setState(ActionName.WALK_BACKWARD)
-    } else if (input.actions.jump) {
+    } else if (jump) {
       this.parent.setState(ActionName.JUMP)
-    } else if (input.actions.left) {
-      this.parent.setState(ActionName.TURN_LEFT)
-    } else if (input.actions.right) {
-      this.parent.setState(ActionName.TURN_RIGHT)
+    } else if (left) {
+      this.parent.setState(rightButton ? ActionName.WALK : ActionName.TURN_LEFT)
+    } else if (right) {
+      this.parent.setState(rightButton ? ActionName.WALK : ActionName.TURN_RIGHT)
     }
   }
 }

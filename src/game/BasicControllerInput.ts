@@ -99,6 +99,13 @@ export class BasicControllerInput {
     if (actionName) {
       this.actions[actionName] = isToggleAction(actionName) ? !this.actions[actionName] : true
     }
+
+    if (actionName === 'left') {
+      this.actions.right = false
+    }
+    if (actionName === 'right') {
+      this.actions.left = false
+    }
   }
 
   private onKeyUp (event: KeyboardEvent) {

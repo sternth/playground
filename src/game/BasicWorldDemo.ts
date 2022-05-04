@@ -1,6 +1,5 @@
 import * as THREE from 'three'
 import { AxesHelper } from './debug/AxesHelper'
-import { ThirdPersonCamera } from './ThirdPersonCamera'
 import { BasicCharacter } from './BasicCharacter'
 import { BasicController } from './BasicController'
 
@@ -14,7 +13,6 @@ export class BasicWorldDemo {
   private mixers: THREE.AnimationMixer[]
 
   private controls: BasicController
-  private thirdPersonCamera: ThirdPersonCamera
 
   public constructor () {
     this.clock = new THREE.Clock()
@@ -117,9 +115,6 @@ export class BasicWorldDemo {
       this.mixers.map(mixer => mixer.update(delta))
       if (this.controls) {
         this.controls.update(delta)
-      }
-      if (this.thirdPersonCamera) {
-        this.thirdPersonCamera.update(delta)
       }
       this.renderer.render(this.scene, this.camera)
       this.render()

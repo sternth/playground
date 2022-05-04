@@ -39,18 +39,16 @@ export class WalkBackwardState extends State<CharacterFSM> {
   }
 
   update (_: number, input: BasicControllerInput): void {
-    if (input.actions.jump) {
+    const { jump, forward, backward, toggleMovement } = input.actions
+
+    if (jump) {
       this.parent.setState(ActionName.JUMP)
-      return
+    } else if (forward) {
+      this.parent.setState(ActionName.WALK)
+    } else if (backward) {
+      if (toggleMovement) this.parent.setState(ActionName.RUN_BACKWARD)
+    } else {
+      this.parent.setState(ActionName.IDLE)
     }
-
-    if (input.actions.backward) {
-      if (input.actions.toggleMovement) {
-        this.parent.setState(ActionName.RUN_BACKWARD)
-      }
-      return
-    }
-
-    this.parent.setState(ActionName.IDLE)
   }
 }

@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import { BasicControllerInput } from './BasicControllerInput'
 import { BasicCharacter } from './BasicCharacter'
-import { bindings, PI, PI_DIVIDED_BY_2, PI_DIVIDED_BY_4, PI_MULTIPLIED_BY_2 } from './constants'
+import { bindings, PI, PI_DIV2, PI_DIV4, PI_MPY2 } from './constants'
 
 type BasicControllerParams = {
   readonly target: BasicCharacter,
@@ -21,6 +21,7 @@ export class BasicController {
   private readonly input: BasicControllerInput
 
   private radius: number
+  private thetaDelta: number
 
   public constructor (params: BasicControllerParams) {
     this.params = params
@@ -28,11 +29,18 @@ export class BasicController {
     this.acceleration = new THREE.Vector3(100, 1, 100)
     this.velocity = new THREE.Vector3(0, 0, 0)
     this.radius = 25
+    this.thetaDelta = 0
     this.currentPosition = new THREE.Vector3()
     this.currentLookAt = new THREE.Vector3()
     this.cameraOffset = new THREE.Vector3(0, 10, 0)
-    this.spherical = new THREE.Spherical(this.radius, PI_DIVIDED_BY_4, PI)
+    this.spherical = new THREE.Spherical(this.radius, PI_DIV4, PI)
     this.input = this.setInput()
+  }
+
+  private getThetaDelta () {
+    const thetaDelta = Math.abs(this.thetaDelta)
+    this.thetaDelta = 0
+    return thetaDelta
   }
 
   public update (timeElapsed: number): void {
@@ -40,6 +48,7 @@ export class BasicController {
 
     this.params.target.stateMachine.update(timeElapsed, this.input)
 
+    const thetaDelta = this.getThetaDelta()
     const velocity = this.velocity
     const frameDeceleration = new THREE.Vector3(
       velocity.x * this.deceleration.x,
@@ -65,30 +74,36 @@ export class BasicController {
       acceleration.multiplyScalar(0.0)
     }
 
-    if (this.input.actions.forward) {
-      velocity.z += acceleration.z * timeElapsed
-    }
-
-    if (this.input.actions.backward) {
-      velocity.z -= acceleration.z * timeElapsed
-    }
-
     const theta = PI * timeElapsed * this.acceleration.y
 
     if (this.input.mouseButtonPressed[THREE.MOUSE.RIGHT]) {
-      a.set(0, 1, 0)
-      q.setFromAxisAngle(a, this.spherical.theta + PI)
-      const t = 1.0 - Math.pow(0.001, timeElapsed)
-      r.slerp(q, t)
+      const t = 1.0 - Math.pow(0.00000001, timeElapsed) + thetaDelta
+      let thetaOffset = 0
+
+      if (this.input.actions.forward) {
+        velocity.z += acceleration.z * timeElapsed
+      } else if (this.input.actions.backward) {
+        velocity.z -= acceleration.z * timeElapsed
+      } else if (this.input.actions.left || this.input.actions.right) {
+        velocity.z += acceleration.z * timeElapsed
+      }
 
       if (this.input.actions.left) {
-        velocity.x += acceleration.x * timeElapsed
+        thetaOffset = this.input.actions.forward ? PI_DIV4 : this.input.actions.backward ? -PI_DIV4 : PI_DIV2
+      } else if (this.input.actions.right) {
+        thetaOffset = this.input.actions.forward ? -PI_DIV4 : this.input.actions.backward ? PI_DIV4 : -PI_DIV2
       }
 
-      if (this.input.actions.right) {
-        velocity.x -= acceleration.x * timeElapsed
-      }
+      a.set(0, 1, 0)
+      q.setFromAxisAngle(a, this.spherical.theta + PI + thetaOffset)
+      r.slerp(q, t)
     } else {
+      if (this.input.actions.forward) {
+        velocity.z += acceleration.z * timeElapsed
+      } else if (this.input.actions.backward) {
+        velocity.z -= acceleration.z * timeElapsed
+      }
+
       if (this.input.actions.left) {
         if (!this.input.mouseButtonPressed[THREE.MOUSE.LEFT]) {
           this.spherical.theta = this.spherical.theta + theta
@@ -153,11 +168,12 @@ export class BasicController {
   }
 
   private onMouseMoving (movement: THREE.Vector2): void {
-    const theta = PI_MULTIPLIED_BY_2 * movement.x / window.innerWidth
-    const phi = PI_MULTIPLIED_BY_2 * movement.y / window.innerHeight
+    const theta = PI_MPY2 * movement.x / window.innerWidth
+    const phi = PI_MPY2 * movement.y / window.innerHeight
 
+    this.thetaDelta += theta
     this.spherical.theta = this.spherical.theta - theta
-    this.spherical.phi = Math.max(Math.min(PI_DIVIDED_BY_2, this.spherical.phi - phi), 0)
+    this.spherical.phi = Math.max(Math.min(PI_DIV2, this.spherical.phi - phi), 0)
     this.spherical.makeSafe()
   }
 
